@@ -59,3 +59,4 @@ config.json
 *.txt
 *.mp*
 *.m4a
+*.exe

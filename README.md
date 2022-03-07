@@ -21,6 +21,8 @@ A mini command line tool to transcribe media files using [wit.ai](https://wit.ai
 
 ## Usage
 
+**Note**: ffmpeg must be installed!
+
 Copy config example file to `config.json` and add required languages API keys you got from the previous step.
 
 ```bash
@@ -58,7 +60,8 @@ options:
 ### تشغيل اﻷداة على ويندوز
 
 - حمل أحدث نسخة من الملف التنفيذي للأداة من [هنا](https://github.com/yshalsager/wit_transcriber/releases/latest).
-- قم بتشغيل الملف التنفيذي عبر سطر/موجه اﻷوامر مع استبدال كلمة filename باسم الملف المراد تدقيقه.
+- حمل ملفات ffmpeg إذا لم يكن مثبتا عندك من [هنا](https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z) وفك الضغط عن الملف ثم انقل `ffmpeg.exe` و `ffprobe.exe` إلى نفس المجلد الذي به الأداة.
+- شغل الملف التنفيذي عبر سطر/موجه اﻷوامر مع استبدال كلمة filename باسم الملف المراد تفريغه.
 
 ```powershell
 ./wit_transcriber.exe -i filename
