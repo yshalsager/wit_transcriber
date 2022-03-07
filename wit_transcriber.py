@@ -191,6 +191,8 @@ def main() -> None:
         "-v", "--verbose", action="store_true", help="Print API responses."
     )
     args = parser.parse_args()
+    if not args.input.exists():
+        raise RuntimeError("Input file doesn't exist! Exitting!")
     if not args.config.exists():
         raise RuntimeError("Config was not found! Exitting!")
 
