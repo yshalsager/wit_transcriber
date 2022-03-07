@@ -17,8 +17,10 @@ class WitAiAPI:
     Based on https://github.com/charslab/TranscriberBot work
     """
 
-    def __init__(self, lang: str, semaphore: int, verbose: bool = False) -> None:
-        self.api_keys = json.loads(Path("config.json").read_text(encoding="utf-8"))
+    def __init__(
+        self, lang: str, semaphore: int, config_file: Path, verbose: bool = False
+    ) -> None:
+        self.api_keys = json.loads(config_file.read_text(encoding="utf-8"))
         self.api_url = "https://api.wit.ai"
         self.lang = lang
         self.chunks = 0
@@ -142,11 +144,12 @@ async def transcribe(
     file_path: Path,
     output: Path,
     semaphore: int,
+    config_file: Path,
     verbose: bool = False,
     lang: str = "ar",
 ) -> None:
     """Speech to text using Wit.ai"""
-    api = WitAiAPI(lang, semaphore, verbose=verbose)
+    api = WitAiAPI(lang, semaphore, config_file, verbose=verbose)
     if not api.has_api_key():
         raise RuntimeError("Language API key was not found! Exitting!")
     await api.transcribe(file_path)
@@ -197,6 +200,7 @@ def main() -> None:
             args.input,
             output_file,
             args.connections,
+            args.config,
             verbose=args.verbose,
             lang=args.lang,
         )
