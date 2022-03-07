@@ -17,6 +17,7 @@ jobs:
         uses: yshalsager/pyinstaller-action-windows@main
         with:
           path: .
+          spec: wit_transcriber.spec
 
       - uses: actions/upload-artifact@v2
         with:
@@ -27,6 +28,7 @@ jobs:
         uses: yshalsager/pyinstaller-action-linux@main
         with:
           path: .
+          spec: wit_transcriber.spec
 
       - uses: actions/upload-artifact@v2
         with:
