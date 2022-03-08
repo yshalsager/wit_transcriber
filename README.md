@@ -26,7 +26,7 @@ A mini command line tool to transcribe media files using [wit.ai](https://wit.ai
 Copy config example file to `config.json` and add required languages API keys you got from the previous step.
 
 ```bash
-usage: wit_transcriber.py [-h] -i INPUT [-o OUTPUT] [-c CONNECTIONS] [-v]
+usage: wit_transcriber.py [-h] -i INPUT [-o OUTPUT] [-c CONFIG] [-x CONNECTIONS] [-l LANG] [-v]
 
 options:
   -h, --help            show this help message and exit
@@ -34,8 +34,11 @@ options:
                         Path of media file to be transcribed.
   -o OUTPUT, --output OUTPUT
                         Path of output file.
-  -c CONNECTIONS, --connections CONNECTIONS
+  -c CONFIG, --config CONFIG
+                        Path of config file.
+  -x CONNECTIONS, --connections CONNECTIONS
                         Number of API connections limit.
+  -l LANG, --lang LANG  Language to use.
   -v, --verbose         Print API responses.
 ```
 
