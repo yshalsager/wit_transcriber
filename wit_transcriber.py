@@ -1,4 +1,5 @@
 import json
+import re
 import traceback
 from argparse import ArgumentParser
 from asyncio import BoundedSemaphore, ensure_future, gather, run
@@ -25,6 +26,7 @@ class WitAiAPI:
         self.lang = lang
         self.chunks = 0
         self.processed_chunks = 0
+        self._text = ""
         self.text_chunks: List[Tuple[int, str]] = []
         self._verbose = verbose
         self._sem = BoundedSemaphore(semaphore)
@@ -33,7 +35,8 @@ class WitAiAPI:
 
     @property
     def text(self) -> str:
-        text = "\n".join([i[1] for i in sorted(self.text_chunks, key=lambda x: x[0])])
+        # text = "\n".join([i[1] for i in sorted(self.text_chunks, key=lambda x: x[0])])
+        text = self._text
         if self.lang == "ar":
             text = (
                 text.replace("?", "؟")
@@ -41,7 +44,9 @@ class WitAiAPI:
                 .replace(" اه اه ", " ")
                 .replace(" اه ", " ")
             )
-        text = text.replace(".", ".\n").replace("  ", " ")
+        # strip extra white spaces from lines
+        text = text.replace(".", ".\n").replace("\n ", "\n")
+        text = re.sub("[ ]{2,}", " ", text, re.M)
         return text
 
     def has_api_key(self) -> bool:
@@ -133,7 +138,10 @@ class WitAiAPI:
                 ensure_future(self.__bound_fetch(chunk, idx))
                 for idx, chunk in enumerate(chunks)
             ]
-            await gather(*tasks)
+            results = await gather(*tasks)
+            for result in results:
+                if result and result[0]:
+                    self._text += result[0]
         except CouldntDecodeError:
             raise Exception(
                 "`Error decoding the audio file.\nEnsure that the provided audio is a valid audio file!`"
