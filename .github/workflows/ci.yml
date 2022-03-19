@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ !contains(github.event.head_commit.message, 'chore(deps-dev)') }}
+    if: ${{ !contains(github.event.head_commit.message, 'chore(deps-dev)') && github.actor!= 'dependabot' }}
 
     steps:
       - uses: actions/checkout@v2
