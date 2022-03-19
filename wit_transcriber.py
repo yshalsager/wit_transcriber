@@ -186,7 +186,7 @@ def main() -> None:
         "--connections",
         help="Number of API connections limit.",
         type=int,
-        default=25,
+        default=5,
     )
     parser.add_argument(
         "-l",
