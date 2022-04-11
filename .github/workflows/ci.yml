@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ !contains(github.event.head_commit.message, 'chore(deps-dev)') &&  github.event.head_commit.author.name!= 'dependabot[bot]' }}
 
     steps:
       - uses: actions/checkout@v2
@@ -22,6 +21,7 @@ jobs:
           spec: wit_transcriber.spec
 
       - uses: actions/upload-artifact@v2
+        if: github.actor != 'dependabot[bot]'
         with:
           name: wit_transcriber.exe
           path: dist/windows
@@ -33,6 +33,7 @@ jobs:
           spec: wit_transcriber.spec
 
       - uses: actions/upload-artifact@v2
+        if: github.actor != 'dependabot[bot]'
         with:
           name: wit_transcriber
           path: dist/linux
@@ -42,6 +43,7 @@ jobs:
         run: echo ::set-output name=datetime::$(date +'%Y%m%d-%H%M%S')
 
       - name: Release
+        if: github.actor != 'dependabot[bot]'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.datetime.outputs.datetime }}
