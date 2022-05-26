@@ -6,7 +6,7 @@ authors = ["yshalsager <ysh-alsager@hotmail.com>"]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.11"
-httpx = "^0.22.0"
+httpx = "^0.23.0"
 pydub = "^0.25.1"
 ratelimiter = "^1.2.0"
 
