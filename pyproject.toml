@@ -14,7 +14,7 @@ ratelimiter = "^1.2.0"
 black = "^22.3"
 pre-commit = "^2.19.0"
 isort = "^5.10.1"
-mypy = "^0.950"
+mypy = "^0.960"
 flake8 = "^4.0.1"
 pyinstaller = "^5.1"
 
