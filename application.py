@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import StringVar, filedialog
 from Preferences import Preferences
-from about import About_Window
 import constants  
 from pathlib import Path
 from settings import Setting_Window
