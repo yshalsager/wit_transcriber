@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import StringVar, filedialog
 from Preferences import Preferences
+from about import About_Window
 import constants  
 from pathlib import Path
 from settings import Setting_Window
@@ -9,6 +10,7 @@ import wit_transcriber
 import asyncio
 import sys 
 import tkinter.font as tkFont
+from webbrowser import open_new_tab
 
 
 class IORedirector(object):
@@ -50,7 +52,7 @@ class GUI(tk.Tk):
         filemenu.add_separator()
         filemenu.add_command(label=constants.MENU_BAR_FILE_EXIT, command=self.on_closing)
         helpmenu = tk.Menu(self.menu, tearoff=0)
-        helpmenu.add_command(label=constants.MENU_BAR_ABOUT, command='')
+        helpmenu.add_command(label=constants.MENU_BAR_ABOUT, command=lambda:open_new_tab("https://github.com/yshalsager/wit_transcriber"))
         self.menu.add_cascade(label=constants.MENU_BAR_FILE, menu=filemenu)
         self.menu.add_cascade(label=constants.MENU_BAR_HELP, menu=helpmenu)
         self.parent.config(menu=self.menu)
