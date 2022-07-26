@@ -125,8 +125,9 @@ Number of API connections limit.
 ### تشغيل اﻷداة على ويندوز
 
 #### من خلال الواجهة الرسومية
- يمكن تحميل الاداة بواجهة رسومية [من هنا](/release/TranscribeArabic_v1.0.0.zip)
+
 ![main_window](/screenshots/1.png)
+يمكن تحميل الاداة بواجهة رسومية [من هنا](/release/TranscribeArabic_v1.0.0.zip)
  ثم اضافة مفتاح التشغيل الخاص بموقع wit.at من خلال شاشة الاعدادات كالتالي:
  ![settings_window](/screenshots/2.png)
 
