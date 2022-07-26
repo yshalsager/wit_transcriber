@@ -34,6 +34,7 @@ class GUI(tk.Tk):
     def __init__(self,loop):
         self.loop = loop
         self.parent = tk.Tk()
+        self.parent.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.parent.title("أداة التفريغ الصوتي")
         self.output_path = StringVar()
         self.input_path = StringVar()
@@ -47,7 +48,7 @@ class GUI(tk.Tk):
         filemenu.add_command(label=constants.MENU_BAR_FILE_NEW, command=self.askForInputPath)
         filemenu.add_command(label=constants.MENU_BAR_FILE_SETTINGS, command=self.open_win)
         filemenu.add_separator()
-        filemenu.add_command(label=constants.MENU_BAR_FILE_EXIT, command=self.parent.destroy)
+        filemenu.add_command(label=constants.MENU_BAR_FILE_EXIT, command=self.on_closing)
         helpmenu = tk.Menu(self.menu, tearoff=0)
         helpmenu.add_command(label=constants.MENU_BAR_ABOUT, command='')
         self.menu.add_cascade(label=constants.MENU_BAR_FILE, menu=filemenu)
@@ -113,6 +114,10 @@ class GUI(tk.Tk):
 
     def open_win(self):
         Setting_Window(self.parent,self.preference)
+
+    def on_closing(self):
+        self.parent.destroy()
+        asyncio.get_event_loop().stop()
 
     async def getTranscribe(self):
         if not self.preference.checkIfArKeyExists():
