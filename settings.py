@@ -2,6 +2,9 @@ import tkinter as tk
 import tkinter.font as tkFont
 
 class Setting_Window():
+    """
+        Window is designed by using https://visualtk.com/
+    """
     def __init__(self,parent,preference) :
         self.parent = parent
         self.preference = preference

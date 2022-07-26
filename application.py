@@ -1,7 +1,10 @@
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import StringVar, filedialog
+from Preferences import Preferences
 import constants  
 from pathlib import Path
+from settings import Setting_Window
 import wit_transcriber
 import asyncio
 import sys 
@@ -35,10 +38,21 @@ class GUI(tk.Tk):
         self.output_path = StringVar()
         self.input_path = StringVar()
         self.init_settings()
-        
+        self.preference = Preferences(str(Path().absolute()))
         self.default_font = tkFont.nametofont("TkDefaultFont")
         self.default_font.configure(family='Tajawal',size=10)
         
+        self.menu = tk.Menu(self.parent)
+        filemenu = tk.Menu(self.menu, tearoff=0)
+        filemenu.add_command(label=constants.MENU_BAR_FILE_NEW, command=self.askForInputPath)
+        filemenu.add_command(label=constants.MENU_BAR_FILE_SETTINGS, command=self.open_win)
+        filemenu.add_separator()
+        filemenu.add_command(label=constants.MENU_BAR_FILE_EXIT, command=self.parent.destroy)
+        helpmenu = tk.Menu(self.menu, tearoff=0)
+        helpmenu.add_command(label=constants.MENU_BAR_ABOUT, command='')
+        self.menu.add_cascade(label=constants.MENU_BAR_FILE, menu=filemenu)
+        self.menu.add_cascade(label=constants.MENU_BAR_HELP, menu=helpmenu)
+        self.parent.config(menu=self.menu)
 
         self.label = tk.Label(self.parent, text="wit.ai أداة للتفريغ الصوتي باستخدام    ")
         self.label.grid(row=0, column=0, pady=10,sticky='w,e')
@@ -66,6 +80,15 @@ class GUI(tk.Tk):
 
         sys.stdout = StdoutRedirector( self.output_area )
 
+        self.verbose_checkbox_var = tk.IntVar()
+        # print(self.verbose_checkbox_var)
+        verbose_checkbox=tk.Checkbutton(self.parent,variable=self.verbose_checkbox_var)
+        verbose_checkbox["justify"] = "center"
+        verbose_checkbox["text"] = "اظهار النتائج"
+        verbose_checkbox.grid(row=6,column=0,sticky="w",padx=10,pady=10)
+        verbose_checkbox["offvalue"] = 0
+        verbose_checkbox["onvalue"] = 1
+
         
             
     def init_settings(self):
@@ -85,7 +108,12 @@ class GUI(tk.Tk):
         input_path=filedialog.askopenfilename(initialdir = "/",title = constants.INPUT_DIALOG_TITLE,filetypes = (("Audio files","*.mp3 *.wav *.m4a *.ogg"),("all files","*.*")))
         self.input_path.set(input_path)
 
-        
+    def on_error_occurs(self,error_msg):
+        messagebox.showerror('خطا',error_msg)
+
+    def open_win(self):
+        Setting_Window(self.parent,self.preference)
+
     async def getTranscribe(self):
         if not self.preference.checkIfArKeyExists():
             self.on_error_occurs(constants.ERROR_API_KEY)
