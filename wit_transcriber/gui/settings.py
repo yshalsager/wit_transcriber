@@ -1,8 +1,7 @@
 import tkinter as tk
 import tkinter.font as tkFont
 from tkinter import messagebox
-
-from awesometkinter.bidirender import render_text
+from typing import Callable
 
 from wit_transcriber.gui.preferences import PreferencesManager
 
@@ -12,10 +11,12 @@ class SettingWindow:
     Window is designed by using https://visualtk.com/
     """
 
-    def __init__(self, parent: tk.Tk, preferences: PreferencesManager) -> None:
+    def __init__(
+        self, parent: tk.Tk, preferences: PreferencesManager, render_text: Callable
+    ) -> None:
         self.parent: tk.Tk = parent
         self.preferences: PreferencesManager = preferences
-
+        self.render_text = render_text
         self.window = tk.Toplevel(self.parent)
         # window.geometry("400x250")
         # setting window size
@@ -34,7 +35,7 @@ class SettingWindow:
             font=ft,
             fg="#333333",
             justify="center",
-            text=render_text("إعدادات البرنامج"),
+            text=self.render_text("إعدادات البرنامج"),
         )
         setting_main_title.place(x=140, y=20, width=200, height=25)
 
@@ -66,7 +67,7 @@ class SettingWindow:
             font=ft,
             fg="#333333",
             justify="left",
-            text=render_text("اللغة العربية"),
+            text=self.render_text("اللغة العربية"),
         )
         ar_lang_label.place(x=30, y=50, width=70, height=25)
 
@@ -75,7 +76,7 @@ class SettingWindow:
             font=ft,
             fg="#333333",
             justify="center",
-            text=render_text("مفتاح التفعيل"),
+            text=self.render_text("مفتاح التفعيل"),
         )
         ar_api_key_label.place(x=170, y=50, width=100, height=25)
 
@@ -85,18 +86,17 @@ class SettingWindow:
             fg="#000000",
             font=ft,
             justify="center",
-            text=render_text("حفظ"),
+            text=self.render_text("حفظ"),
             command=self.save_settings,
         )
         save_btn.place(x=160, y=250, width=70, height=25)
 
     def save_settings(self) -> None:
         self.preferences.put("ar", self.ar_api_key_entry_str_var.get())
-        self.show_info(render_text("تم حفظ الإعدادات بنجاح!"))
+        self.show_info(self.render_text("تم حفظ الإعدادات بنجاح!"))
 
-    @staticmethod
-    def show_info(msg: str) -> None:
-        messagebox.showinfo(render_text("إعدادات"), msg)
+    def show_info(self, msg: str) -> None:
+        messagebox.showinfo(self.render_text("إعدادات"), msg)
 
     def load_preference_settings(self) -> None:
         self.ar_api_key_entry_str_var.set(self.preferences.get("ar"))
