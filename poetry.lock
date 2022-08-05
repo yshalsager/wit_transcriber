@@ -486,7 +486,7 @@ testing = ["coverage (>=6.2)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.10,<3.11"
-content-hash = "4053420359e105fe70b59b14111dbc57d8c070c27021926772f316ac065e609e"
+content-hash = "c6900b68aaac8302c3391345c2a6342ac0d68cce6c1b99bbab5ee466a09fcb9b"
 
 [metadata.files]
 altgraph = [
