@@ -60,3 +60,4 @@ config.json
 *.mp*
 *.m4a
 *.exe
+last_run.log*

@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "wit_transcriber"
-version = "0.1.0"
-description = "A mini command line tool to transcribe media files using wit.ai"
+version = "0.2.0"
+description = "A tool to transcribe media files using wit.ai"
 authors = ["yshalsager <ysh-alsager@hotmail.com>"]
 
 [tool.poetry.dependencies]
@@ -9,6 +9,9 @@ python = ">=3.10,<3.11"
 httpx = "^0.23.0"
 pydub = "^0.25.1"
 ratelimiter = "^1.2.0"
+AwesomeTkinter = {version = "^2021.11.8", extras = ["gui"]}
+click = "^8.1.3"
+toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 black = "^22.6"
@@ -23,11 +26,12 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-wit_transcriber = 'wit_transcriber:main'
+wit_transcriber = 'wit_transcriber.cli.app:transcribe'
+wit_transcriber_gui = 'wit_transcriber.gui.app:gui'
 
 
 [tool.black]
-include = '(droos_bot\/.*$|\.pyi?$)'
+include = '(wit_transcriber\/.*$|\.pyi?$)'
 exclude = '''
 /(
     \.git
@@ -40,7 +44,7 @@ exclude = '''
 profile = "black"
 
 [tool.mypy]
-files = ["droos_bot"]
+files = ["wit_transcriber"]
 ignore_missing_imports = true
 disallow_untyped_defs = true
 #disallow_any_unimported = true
