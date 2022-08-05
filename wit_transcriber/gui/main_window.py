@@ -1,17 +1,18 @@
-import asyncio
 import sys
 import tkinter as tk
 import tkinter.font as tkFont
+from asyncio import create_task, get_event_loop, sleep
 from pathlib import Path
 from tkinter import StringVar, filedialog, messagebox
 from webbrowser import open_new_tab
 
 from awesometkinter.bidirender import render_text
 
-import constants
-import wit_transcriber
-from preferences import PreferencesManager
-from settings import SettingWindow
+from wit_transcriber import PARENT_DIR
+from wit_transcriber.api_client.client import WitAiAPI
+from wit_transcriber.gui import constants
+from wit_transcriber.gui.preferences import PreferencesManager
+from wit_transcriber.gui.settings import SettingWindow
 
 
 class IORedirector:
@@ -47,6 +48,7 @@ class App:
         self.parent: tk.Tk = tk.Tk()
         self.parent.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.parent.title("أداة التفريغ الصوتي")
+        # self.parent.iconphoto(True, tk.PhotoImage(file=str(PARENT_DIR / "chat-centered-text-duotone.png")))
         self.output_path = StringVar()
         self.input_path = StringVar()
         self.init_settings()
@@ -110,7 +112,7 @@ class App:
         self.startTranscribe = tk.Button(
             self.parent,
             text=render_text(constants.SUBMIT_BUTTON),
-            command=lambda: asyncio.create_task(self.get_transcribe()),
+            command=lambda: create_task(self.get_transcribe()),
         )
         self.startTranscribe.grid(row=4, column=0, pady=10, padx=10, columnspan=2)
 
@@ -147,7 +149,7 @@ class App:
     async def show(self) -> None:
         while True:
             self.parent.update()
-            await asyncio.sleep(0.1)
+            await sleep(0.1)
 
     def ask_for_output_path(self) -> None:
         output_path = filedialog.askdirectory()
@@ -173,7 +175,7 @@ class App:
 
     def on_closing(self) -> None:
         self.parent.destroy()
-        asyncio.get_event_loop().stop()
+        get_event_loop().stop()
 
     async def get_transcribe(self) -> None:
         if not self.preference.check_if_ar_key_exists():
@@ -185,14 +187,11 @@ class App:
         output_path = Path(self.output_path.get() + f"/{file_path.stem}.txt")
         config_path = Path(self.preference.get_config_file())
         try:
-            await wit_transcriber.transcribe(
-                file_path=file_path,
-                output=output_path,
-                semaphore=5,
-                config_file=config_path,
-                verbose=True and bool(self.verbose_checkbox_var.get()),
-                lang="ar",
+            api_client = WitAiAPI(
+                "ar", 5, config_path, bool(self.verbose_checkbox_var.get())
             )
+            await api_client.transcribe(file_path)
+            Path(output_path).write_text(api_client.text, encoding="utf-8")
         except:
             self.output_area.insert(tk.INSERT, "Error occurs! Please try again!")
             self.enable_entries()
@@ -210,11 +209,3 @@ class App:
 
     async def exec(self) -> None:
         await self.show()
-
-
-def main() -> None:
-    asyncio.run(App().exec())
-
-
-if __name__ == "__main__":
-    main()

@@ -37,7 +37,7 @@ cx_Freeze.setup(
     version=__version__,
     executables=[
         cx_Freeze.Executable(
-            "application.py",
+            "wit_transcriber/gui/main_window.py",
             base=base,
             icon="main.ico",
             shortcutName="Transcribe Arabic",

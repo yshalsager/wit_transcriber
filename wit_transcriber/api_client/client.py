@@ -1,8 +1,7 @@
 import json
 import re
 import traceback
-from argparse import ArgumentParser
-from asyncio import BoundedSemaphore, ensure_future, gather, run
+from asyncio import BoundedSemaphore, ensure_future, gather
 from pathlib import Path
 from typing import List, Tuple
 
@@ -46,7 +45,7 @@ class WitAiAPI:
             )
         # strip extra white spaces from lines
         text = text.replace(".", ".\n").replace("\n ", "\n")
-        text = re.sub("[ ]{2,}", " ", text, re.M)
+        text = re.sub(" {2,}", " ", text, re.M)
         return text
 
     def has_api_key(self) -> bool:
@@ -117,7 +116,7 @@ class WitAiAPI:
         return audio.set_sample_width(2).set_channels(1).set_frame_rate(8000)
 
     async def __bound_fetch(self, chunk: AudioSegment, idx: int) -> Tuple[str, str]:
-        # Getter function with semaphore.
+        # Getter functions with semaphore.
         async with self._sem:
             return await self.__transcribe_chunk(chunk, idx)
 
@@ -146,76 +145,3 @@ class WitAiAPI:
             raise Exception(
                 "`Error decoding the audio file.\nEnsure that the provided audio is a valid audio file!`"
             )
-
-
-async def transcribe(
-    file_path: Path,
-    output: Path,
-    semaphore: int,
-    config_file: Path,
-    verbose: bool = False,
-    lang: str = "ar",
-) -> None:
-    """Speech to text using Wit.ai"""
-    api = WitAiAPI(lang, semaphore, config_file, verbose=verbose)
-    if not api.has_api_key():
-        raise RuntimeError("Language API key was not found! Exitting!")
-    await api.transcribe(file_path)
-    Path(output).write_text(api.text, encoding="utf-8")
-
-
-def main() -> None:
-    parser = ArgumentParser()
-    parser.add_argument(
-        "-i",
-        "--input",
-        help="Path of media file to be transcribed.",
-        required=True,
-        type=Path,
-    )
-    parser.add_argument("-o", "--output", help="Path of output file.", type=Path)
-    parser.add_argument(
-        "-c",
-        "--config",
-        help="Path of config file.",
-        type=Path,
-        default=Path("config.json"),
-    )
-    parser.add_argument(
-        "-x",
-        "--connections",
-        help="Number of API connections limit.",
-        type=int,
-        default=5,
-    )
-    parser.add_argument(
-        "-l",
-        "--lang",
-        help="Language to use.",
-        type=str,
-        default="ar",
-    )
-    parser.add_argument(
-        "-v", "--verbose", action="store_true", help="Print API responses."
-    )
-    args = parser.parse_args()
-    if not args.input.exists():
-        raise RuntimeError("Input file doesn't exist! Exitting!")
-    if not args.config.exists():
-        raise RuntimeError("Config was not found! Exitting!")
-
-    output_file = args.output if args.output else Path(f"{args.input.stem}.txt")
-    run(
-        transcribe(
-            args.input,
-            output_file,
-            args.connections,
-            args.config,
-            verbose=args.verbose,
-            lang=args.lang,
-        )
-    )
-
-
-if __name__ == "__main__":
-    main()
