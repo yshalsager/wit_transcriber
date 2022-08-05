@@ -5,13 +5,13 @@ block_cipher = None
 
 
 a = Analysis(
-    ['../wit_transcriber.py'],
+    ['wit_transcriber/cli/app.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('pyproject.toml', '.')],
     hiddenimports=[],
     hookspath=[],
-    hooksconfig=None,
+    hooksconfig={},
     runtime_hooks=[],
     excludes=[],
     win_no_prefer_redirects=False,
