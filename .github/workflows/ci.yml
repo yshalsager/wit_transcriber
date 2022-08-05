@@ -80,7 +80,7 @@ jobs:
           fi
 
       - name: Release
-        if: github.actor != 'dependabot[bot]'
+        if: github.actor != 'dependabot[bot]' && github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.release.outputs.version }}
