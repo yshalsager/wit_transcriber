@@ -49,12 +49,13 @@ jobs:
           spec: wit_transcriber.spec
           requirements: requirements.txt
 
-      - name: Package GUI Application for Windows
-        uses: yshalsager/pyinstaller-action-linux@main
+      - name: Package GUI Application for Linux
+        uses: yshalsager/pyinstaller-action-linux@tkinter
         with:
           path: .
           spec: wit_transcriber_gui.spec
           requirements: requirements.txt
+          tkinter: true
 
       - uses: actions/upload-artifact@v2
         if: github.actor != 'dependabot[bot]'
