@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "wit_transcriber"
-version = "0.1.0"
-description = "A mini command line tool to transcribe media files using wit.ai"
+version = "0.2.0"
+description = "A tool to transcribe media files using wit.ai"
 authors = ["yshalsager <ysh-alsager@hotmail.com>"]
 
 [tool.poetry.dependencies]
