@@ -9,6 +9,7 @@ python = ">=3.10,<3.11"
 httpx = "^0.23.0"
 pydub = "^0.25.1"
 ratelimiter = "^1.2.0"
+AwesomeTkinter = {version = "^2021.11.8", extras = ["gui"]}
 
 [tool.poetry.dev-dependencies]
 black = "^22.6"
@@ -24,6 +25,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 wit_transcriber = 'wit_transcriber:main'
+wit_transcriber_gui = 'application:main'
 
 
 [tool.black]
