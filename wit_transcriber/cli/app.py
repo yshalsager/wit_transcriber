@@ -71,4 +71,4 @@ if __name__ == "__main__":
         pass
 
     cli.add_command(transcribe)
-    cli()
+    transcribe()

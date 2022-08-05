@@ -17,4 +17,4 @@ if __name__ == "__main__":
         pass
 
     cli.add_command(gui)
-    cli()
+    gui()
