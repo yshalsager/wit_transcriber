@@ -4,7 +4,7 @@ from tkinter import messagebox
 
 from awesometkinter.bidirender import render_text
 
-from preferences import PreferencesManager
+from wit_transcriber.gui.preferences import PreferencesManager
 
 
 class SettingWindow:
