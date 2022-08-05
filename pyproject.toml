@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wit_transcriber"
-version = "0.2.0"
+version = "0.2.1"
 description = "A tool to transcribe media files using wit.ai"
 authors = ["yshalsager <ysh-alsager@hotmail.com>"]
 
@@ -18,7 +18,7 @@ black = "^22.6"
 pre-commit = "^2.20.0"
 isort = "^5.10.1"
 mypy = "^0.971"
-flake8 = "^4.0.1"
+flake8 = "^5.0.4"
 pyinstaller = "^5.2"
 
 [build-system]
