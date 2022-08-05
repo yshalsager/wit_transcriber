@@ -57,6 +57,33 @@ class App:
         self.default_font.configure(family="Tajawal", size=10)
 
         self.menu = tk.Menu(self.parent)
+        self.label = tk.Label(
+            self.parent, text=render_text("wit.ai أداة للتفريغ الصوتي باستخدام")
+        )
+        self.input_entry = tk.Entry(self.parent, textvariable=self.input_path, width=60)
+        self.output_entry = tk.Entry(
+            self.parent, textvariable=self.output_path, width=60
+        )
+        self.startTranscribe = tk.Button(
+            self.parent,
+            text=render_text(constants.SUBMIT_BUTTON),
+            command=lambda: create_task(self.get_transcribe()),
+        )
+        self.scrollbar = tk.Scrollbar(self.parent, orient=tk.VERTICAL)
+        self.output_area = tk.Text(
+            self.parent,
+            height=5,
+            width=25,
+            bg="light gray",
+            yscrollcommand=self.scrollbar.set,
+        )
+        self.verbose_checkbox_var = tk.IntVar()
+        self.init_ui()
+
+    def init_settings(self) -> None:
+        self.output_path.set(str(Path().absolute()))
+
+    def init_ui(self) -> None:
         file_menu = tk.Menu(self.menu, tearoff=0)
         file_menu.add_command(
             label=render_text(constants.MENU_BAR_FILE_NEW),
@@ -84,17 +111,8 @@ class App:
         )
         self.parent.config(menu=self.menu)
 
-        self.label = tk.Label(
-            self.parent, text=render_text("wit.ai أداة للتفريغ الصوتي باستخدام")
-        )
         self.label.grid(row=0, column=0, pady=10, sticky="w,e")
-
-        self.input_entry = tk.Entry(self.parent, textvariable=self.input_path, width=60)
         self.input_entry.grid(row=1, column=0, pady=10, padx=10)
-
-        self.output_entry = tk.Entry(
-            self.parent, textvariable=self.output_path, width=60
-        )
         self.output_entry.grid(row=3, column=0, pady=10, padx=10)
 
         tk.Button(
@@ -109,28 +127,14 @@ class App:
             command=self.ask_for_output_path,
         ).grid(row=3, column=1, pady=10, padx=10)
 
-        self.startTranscribe = tk.Button(
-            self.parent,
-            text=render_text(constants.SUBMIT_BUTTON),
-            command=lambda: create_task(self.get_transcribe()),
-        )
         self.startTranscribe.grid(row=4, column=0, pady=10, padx=10, columnspan=2)
 
-        self.scrollbar = tk.Scrollbar(self.parent, orient=tk.VERTICAL)
-        self.output_area = tk.Text(
-            self.parent,
-            height=5,
-            width=25,
-            bg="light gray",
-            yscrollcommand=self.scrollbar.set,
-        )
         self.scrollbar.config(command=self.output_area.yview)
         self.output_area.grid(row=5, column=0, sticky="wes", padx=10, pady=10)
         self.scrollbar.grid(row=5, column=0, sticky="nse", padx=10, pady=10)
 
         sys.stdout = StdoutRedirector(self.output_area)  # type: ignore
 
-        self.verbose_checkbox_var = tk.IntVar()
         # print(self.verbose_checkbox_var)
         verbose_checkbox = tk.Checkbutton(
             self.parent,
@@ -141,9 +145,6 @@ class App:
             onvalue=1,
         )
         verbose_checkbox.grid(row=6, column=0, sticky="w", padx=10, pady=10)
-
-    def init_settings(self) -> None:
-        self.output_path.set(str(Path().absolute()))
 
     # TODO [Improvement] edit to handle onClosing and stop asyncio loop
     async def show(self) -> None:
