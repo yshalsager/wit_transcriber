@@ -157,7 +157,7 @@ class App:
 
     def ask_for_input_path(self) -> None:
         input_path = filedialog.askopenfilename(
-            initialdir="./",
+            initialdir="/",
             title=render_text(constants.INPUT_DIALOG_TITLE),
             filetypes=(
                 ("Audio files", "*.mp3 *.wav *.m4a *.ogg"),
