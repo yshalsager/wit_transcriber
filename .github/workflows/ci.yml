@@ -1,93 +1,47 @@
-name: Package Application with Pyinstaller
+name: Package Application with cx_Freeze
 
 on:
   push:
     branches: [ master ]
     tags: [ v* ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, dev ]
+#  workflow_dispatch:
+#    inputs:
+#      version-win:
+#        description: "Version(semver)"
+#        required: true
+#        default: "X.X"
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    if: ${{ !contains(github.event.head_commit.message, '(deps') }}
+    runs-on: ${{ matrix.os }}
+    if: github.event.pull_request.merged == true && ${{ !contains(github.event.head_commit.message, '(deps') }}
+
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
 
     steps:
       - uses: actions/checkout@v2
-      - uses: hmarr/debug-action@v2
-
-      - name: Package CLI Application for Windows
-        uses: yshalsager/pyinstaller-action-windows@main
+      - name: Install Python
+        uses: actions/setup-python@v2
         with:
-          path: .
-          spec: wit_transcriber.spec
-          requirements: requirements.txt
-
-      - name: Package GUI Application for Windows
-        uses: yshalsager/pyinstaller-action-windows@main
-        with:
-          path: .
-          spec: wit_transcriber_gui.spec
-          requirements: requirements.txt
-
-      - uses: actions/upload-artifact@v2
-        if: github.actor != 'dependabot[bot]'
-        with:
-          name: wit_transcriber.exe
-          path: dist/windows
-
-      - uses: actions/upload-artifact@v2
-        if: github.actor != 'dependabot[bot]'
-        with:
-          name: wit_transcriber_gui.exe
-          path: dist/windows
-
-      - name: Package CLI Application for Linux
-        uses: yshalsager/pyinstaller-action-linux@main
-        with:
-          path: .
-          spec: wit_transcriber.spec
-          requirements: requirements.txt
-
-      - name: Package GUI Application for Linux
-        uses: yshalsager/pyinstaller-action-linux@tkinter
-        with:
-          path: .
-          spec: wit_transcriber_gui.spec
-          requirements: requirements.txt
-          tkinter: true
-
-      - uses: actions/upload-artifact@v2
-        if: github.actor != 'dependabot[bot]'
-        with:
-          name: wit_transcriber
-          path: dist/linux
-
-      - uses: actions/upload-artifact@v2
-        if: github.actor != 'dependabot[bot]'
-        with:
-          name: wit_transcriber_gui
-          path: dist/linux
-
-      - name: Set release name to tag name or datetime
-        id: release
+          python-version: '3.10'
+      - name: Install requirements
         run: |
-          echo ${{ github.ref }}
-          ref='refs/tags/v'
-          if [[ ${{ github.ref }} == *${ref}* ]]; then
-            echo ::set-output name=version::${GITHUB_REF/refs\/tags\//}
-          else
-            echo ::set-output name=version::$(date +'%Y%m%d-%H%M%S')
-          fi
-
-      - name: Release
-        if: github.actor != 'dependabot[bot]' && github.event_name != 'pull_request'
-        uses: softprops/action-gh-release@v1
+          python -m pip install --upgrade pip
+          pip install flake8 pytest cx_Freeze
+          pip install .
+      - name: Run cx_Freeze
+        run: python setup.py build -b dist
+      - name: Create zip
+        uses: papeloto/action-zip@v1
         with:
-          tag_name: ${{ steps.release.outputs.version }}
-          name: ${{ steps.release.outputs.version }}
-          files: |
-            dist/windows/wit_transcriber.exe
-            dist/linux/wit_transcriber
-            dist/windows/wit_transcriber_gui.exe
-            dist/linux/wit_transcriber_gui
+          files: dist
+          dest: dist.zip
+      - uses: actions/upload-artifact@v3
+        with:
+          name: TranscribeArabic-${{ runner.os }}.zip
+          path: dist.zip
+          retention-days: 7

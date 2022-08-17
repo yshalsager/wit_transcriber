@@ -1,18 +1,25 @@
 import os
-import shutil
 import sys
+from pathlib import Path
+from shutil import copy
 
 import cx_Freeze
 
-os.environ["TCL_LIBRARY"] = r"PATH_TO_PYTHON\\tcl\\tcl8.6"
-os.environ["TK_LIBRARY"] = r"PATH_TO_PYTHON\\tcl\\tk8.6"
-
 __version__ = "1.0.0"
 base = None
+include_files = ["assets/chat-centered-text-duotone.ico"]
+
 if sys.platform == "win32":
     base = "Win32GUI"
+    os.environ["TCL_LIBRARY"] = r"PATH_TO_PYTHON\\tcl\\tcl8.6"
+    os.environ["TK_LIBRARY"] = r"PATH_TO_PYTHON\\tcl\\tk8.6"
+    path = Path(__file__).parent.resolve()
+    if (path / "ffmpeg.exe").exists():
+        include_files.append("ffmpeg.exe")
+    build_path = path / "build" / "exe.win32-3.7"
+    copy(r"PATH_TO_PYTHON\\DLLs\\tcl86t.dll", build_path)
+    copy(r"PATH_TO_PYTHON\\DLLs\\tk86t.dll", build_path)
 
-include_files = ["ffmpeg.exe", "main.ico"]
 includes = ["tkinter"]
 excludes = ["matplotlib", "sqlite3"]
 packages = [
@@ -39,7 +46,7 @@ cx_Freeze.setup(
         cx_Freeze.Executable(
             "wit_transcriber/gui/main_window.py",
             base=base,
-            icon="main.ico",
+            icon="assets/chat-centered-text-duotone.ico",
             shortcutName="Transcribe Arabic",
             shortcutDir="DesktopFolder",
         )
@@ -55,12 +62,15 @@ cx_Freeze.setup(
         "bdist_msi": {
             "upgrade_code": "{00EF338F-794D-3AB8-8CD6-2B0AB7541021}",
             "add_to_path": False,
-            "initial_target_dir": r"[ProgramFilesFolder]\%s" % ("TranscribeArabic"),
+            "initial_target_dir": rf"[ProgramFilesFolder]\TranscribeArabic",
+        },
+        "bdist_mac": {
+            "iconfile": "chat-centered-text-duotone.icns",
+            "bundle_name": "TranscribeArabic",
+        },
+        "bdist_dmg": {
+            "volume_label": "Install Transcribe Arabic",
+            "applications_shortcut": True,
         },
     },
 )
-
-path = os.path.abspath(os.path.join(os.path.realpath(__file__), os.pardir))
-build_path = os.path.join(path, "build", "exe.win32-3.7")
-shutil.copy(r"PATH_TO_PYTHON\\DLLs\\tcl86t.dll", build_path)
-shutil.copy(r"PATH_TO_PYTHON\\DLLs\\tk86t.dll", build_path)
