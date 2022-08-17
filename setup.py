@@ -1,7 +1,5 @@
-import os
 import sys
 from pathlib import Path
-from shutil import copy
 from typing import List
 
 import cx_Freeze
@@ -39,11 +37,11 @@ cx_Freeze.setup(
     version=__version__,
     executables=[
         cx_Freeze.Executable(
-            "wit_transcriber/gui/main_window.py",
+            "wit_transcriber/gui/app.py",
             base=base,
             icon="assets/chat-centered-text-duotone.ico",
-            shortcutName="Transcribe Arabic",
-            shortcutDir="DesktopFolder",
+            shortcut_name="Transcribe Arabic",
+            shortcut_dir="DesktopFolder",
         )
     ],
     options={
@@ -61,7 +59,7 @@ cx_Freeze.setup(
             "install_icon": "assets/chat-centered-text-duotone.ico",
         },
         "bdist_mac": {
-            "iconfile": "chat-centered-text-duotone.icns",
+            "iconfile": "assets/chat-centered-text-duotone.icns",
             "bundle_name": "TranscribeArabic",
         },
         "bdist_dmg": {
