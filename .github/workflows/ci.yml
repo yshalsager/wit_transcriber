@@ -1,93 +1,149 @@
-name: Package Application with Pyinstaller
+name: Package Application with cx_Freeze
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, dev ]
     tags: [ v* ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, dev ]
+#  workflow_dispatch:
+#    inputs:
+#      version-win:
+#        description: "Version(semver)"
+#        required: true
+#        default: "X.X"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    if: ${{ !contains(github.event.head_commit.message, '(deps') }}
-
+  build-windows:
+    if: github.actor != 'dependabot[bot]' && github.event_name != 'pull_request' && ${{ !contains(github.event.head_commit.message, '(deps') }}
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        architecture: [ 'x64', 'x86' ]
     steps:
-      - uses: actions/checkout@v2
-      - uses: hmarr/debug-action@v2
-
-      - name: Package CLI Application for Windows
-        uses: yshalsager/pyinstaller-action-windows@main
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
-          path: .
-          spec: wit_transcriber.spec
-          requirements: requirements.txt
-
-      - name: Package GUI Application for Windows
-        uses: yshalsager/pyinstaller-action-windows@main
-        with:
-          path: .
-          spec: wit_transcriber_gui.spec
-          requirements: requirements.txt
-
-      - uses: actions/upload-artifact@v2
-        if: github.actor != 'dependabot[bot]'
-        with:
-          name: wit_transcriber.exe
-          path: dist/windows
-
-      - uses: actions/upload-artifact@v2
-        if: github.actor != 'dependabot[bot]'
-        with:
-          name: wit_transcriber_gui.exe
-          path: dist/windows
-
-      - name: Package CLI Application for Linux
-        uses: yshalsager/pyinstaller-action-linux@main
-        with:
-          path: .
-          spec: wit_transcriber.spec
-          requirements: requirements.txt
-
-      - name: Package GUI Application for Linux
-        uses: yshalsager/pyinstaller-action-linux@tkinter
-        with:
-          path: .
-          spec: wit_transcriber_gui.spec
-          requirements: requirements.txt
-          tkinter: true
-
-      - uses: actions/upload-artifact@v2
-        if: github.actor != 'dependabot[bot]'
-        with:
-          name: wit_transcriber
-          path: dist/linux
-
-      - uses: actions/upload-artifact@v2
-        if: github.actor != 'dependabot[bot]'
-        with:
-          name: wit_transcriber_gui
-          path: dist/linux
-
-      - name: Set release name to tag name or datetime
-        id: release
+          python-version: '3.10'
+          architecture: ${{ matrix.architecture }}
+          cache: 'pip'
+          cache-dependency-path: 'poetry.lock'
+      - name: Install requirements
         run: |
-          echo ${{ github.ref }}
-          ref='refs/tags/v'
-          if [[ ${{ github.ref }} == *${ref}* ]]; then
-            echo ::set-output name=version::${GITHUB_REF/refs\/tags\//}
-          else
-            echo ::set-output name=version::$(date +'%Y%m%d-%H%M%S')
-          fi
-
-      - name: Release
-        if: github.actor != 'dependabot[bot]' && github.event_name != 'pull_request'
-        uses: softprops/action-gh-release@v1
+          python -m pip install --upgrade pip setuptools wheel
+          pip install .
+          pip install cx-Freeze
+      - name: Download ffmpeg
+        run: |
+          Invoke-WebRequest https://github.com/GyanD/codexffmpeg/releases/download/5.1/ffmpeg-5.1-essentials_build.zip -O ffmpeg.zip
+          tar.exe -xf ffmpeg.zip
+          move ffmpeg-5.1-essentials_build/bin/ffmpeg.exe ffmpeg.exe
+      - run: python setup.py build -b dist
+      - run: tar.exe -acf dist.zip dist
+      - uses: actions/upload-artifact@v3
         with:
-          tag_name: ${{ steps.release.outputs.version }}
-          name: ${{ steps.release.outputs.version }}
-          files: |
-            dist/windows/wit_transcriber.exe
-            dist/linux/wit_transcriber
-            dist/windows/wit_transcriber_gui.exe
-            dist/linux/wit_transcriber_gui
+          name: TranscribeArabic-${{ runner.os }}-${{ matrix.architecture }}-portable.zip
+          path: dist.zip
+  build-windows-msi:
+    if: github.actor != 'dependabot[bot]' && github.event_name != 'pull_request' && ${{ !contains(github.event.head_commit.message, '(deps') }}
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        architecture: [ 'x64', 'x86' ]
+    env:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+      LC_CTYPE: C.UTF-8
+      PYTHONIOENCODING: UTF-8
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          architecture: ${{ matrix.architecture }}
+          cache: 'pip'
+          cache-dependency-path: 'poetry.lock'
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install .
+          pip install cx-Freeze
+      - name: Download ffmpeg
+        run: |
+          Invoke-WebRequest https://github.com/GyanD/codexffmpeg/releases/download/5.1/ffmpeg-5.1-essentials_build.zip -O ffmpeg.zip
+          tar.exe -xf ffmpeg.zip
+          move ffmpeg-5.1-essentials_build/bin/ffmpeg.exe ffmpeg.exe
+      - run: python setup.py build bdist_msi
+      - uses: actions/upload-artifact@v3
+        with:
+          name: TranscribeArabic-${{ runner.os }}-${{ matrix.architecture }}.msi
+          path: 'dist/*.msi'
+  build-linux:
+    if: github.actor != 'dependabot[bot]' && github.event_name != 'pull_request' && ${{ !contains(github.event.head_commit.message, '(deps') }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture: [ 'x64', 'x86' ]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          architecture: 'x64'
+          cache: 'pip'
+          cache-dependency-path: 'poetry.lock'
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install .
+          pip install cx-Freeze
+      - run: python setup.py build -b linux
+      - run: tar -czvf TranscribeArabic.tar.gz linux
+      - uses: actions/upload-artifact@v3
+        with:
+          name: TranscribeArabic-${{ runner.os }}-${{ matrix.architecture }}.zip
+          path: TranscribeArabic.tar.gz
+  build-macos-dmg:
+    if: github.actor != 'dependabot[bot]' && github.event_name != 'pull_request' && ${{ !contains(github.event.head_commit.message, '(deps') }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          architecture: 'x64'
+          cache: 'pip'
+          cache-dependency-path: 'poetry.lock'
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install .
+          pip install cx-Freeze
+      - name: Run cx_Freeze
+        run: python setup.py bdist_dmg
+      - uses: actions/upload-artifact@v3
+        with:
+          name: TranscribeArabic-macOS.dmg
+          path: build/Install Transcribe Arabic.dmg
+  build-macos-app:
+    if: github.actor != 'dependabot[bot]' && github.event_name != 'pull_request' && ${{ !contains(github.event.head_commit.message, '(deps') }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          architecture: 'x64'
+          cache: 'pip'
+          cache-dependency-path: 'poetry.lock'
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install .
+          pip install cx-Freeze
+      - name: Run cx_Freeze
+        run: python setup.py bdist_mac
+      - uses: actions/upload-artifact@v3
+        with:
+          name: TranscribeArabic-macOS.app
+          path: build/TranscribeArabic.app
