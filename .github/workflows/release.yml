@@ -114,11 +114,11 @@ jobs:
       - name: Run cx_Freeze
         run: python setup.py bdist_mac
       - run: mv build/TranscribeArabic.app TranscribeArabic-macOS.app
-      - run: tar -cf TranscribeArabic-macOS.app TranscribeArabic-macOS-app.tar
+      - run: zip -r9 TranscribeArabic-macOS.app/ TranscribeArabic-macOS-app.zip
       - uses: actions/upload-artifact@v3
         with:
-          name: TranscribeArabic-macOS-app.tar
-          path: TranscribeArabic-macOS-app.tar
+          name: TranscribeArabic-macOS-app.zip
+          path: TranscribeArabic-macOS-app.zip
   build-linux:
     runs-on: ubuntu-latest
     steps:
@@ -160,4 +160,4 @@ jobs:
         commit: 'master'
         tag: ${{ github.event.inputs.version }}
         name: ${{ github.event.inputs.version }}
-        artifacts: '*/*.msi, */*.zip, */wit_transcriber, */wit_transcriber_gui, */*app.tar, */*.dmg'
+        artifacts: '*/*.msi, */*.zip, */wit_transcriber, */wit_transcriber_gui, */*.dmg'
