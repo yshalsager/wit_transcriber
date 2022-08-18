@@ -91,11 +91,11 @@ jobs:
           pip install cx-Freeze
       - name: Run cx_Freeze
         run: python setup.py bdist_dmg
-#      - run: mv 'build/Install Transcribe Arabic.dmg' TranscribeArabic-macOS.dmg
+      - run: mv 'build/Install Transcribe Arabic.dmg' TranscribeArabic-macOS.dmg
       - uses: actions/upload-artifact@v3
         with:
           name: TranscribeArabic-macOS.dmg
-          path: build/Install Transcribe Arabic.dmg
+          path: TranscribeArabic-macOS.dmg
   build-macos-app:
     runs-on: macos-latest
     steps:
@@ -113,11 +113,12 @@ jobs:
           pip install cx-Freeze
       - name: Run cx_Freeze
         run: python setup.py bdist_mac
-#      - run: mv build/TranscribeArabic.app TranscribeArabic-macOS.app
+      - run: mv build/TranscribeArabic.app TranscribeArabic-macOS.app
+      - run: tar -cf TranscribeArabic-macOS.app TranscribeArabic-macOS-app.tar
       - uses: actions/upload-artifact@v3
         with:
-          name: TranscribeArabic-macOS.app
-          path: build/TranscribeArabic.app
+          name: TranscribeArabic-macOS-app.tar
+          path: TranscribeArabic-macOS-app.tar
   build-linux:
     runs-on: ubuntu-latest
     steps:
@@ -159,4 +160,4 @@ jobs:
         commit: 'master'
         tag: ${{ github.event.inputs.version }}
         name: ${{ github.event.inputs.version }}
-        artifacts: 'TranscribeArabic-*/TranscribeArabic-*, TranscribeArabic-*/wit_transcriber, TranscribeArabic-*/wit_transcriber_gui'
+        artifacts: '*/*.msi, */*.zip, */wit_transcriber, */wit_transcriber_gui, */*app.tar, */*.dmg'
