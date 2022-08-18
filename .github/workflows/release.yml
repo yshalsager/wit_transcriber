@@ -114,7 +114,7 @@ jobs:
       - name: Run cx_Freeze
         run: python setup.py bdist_mac
       - run: mv build/TranscribeArabic.app TranscribeArabic-macOS.app
-      - run: zip -r9 TranscribeArabic-macOS.app/ TranscribeArabic-macOS-app.zip
+      - run: zip -r9 TranscribeArabic-macOS-app.zip TranscribeArabic-macOS.app/*
       - uses: actions/upload-artifact@v3
         with:
           name: TranscribeArabic-macOS-app.zip
