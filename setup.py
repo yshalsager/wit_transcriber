@@ -7,11 +7,13 @@ import cx_Freeze
 __version__ = "1.0.0"
 base = None
 include_files: List[str] = []
-
+ffmpeg_files: List[str] = ["ffmpeg.exe", "ffprobe.exe"]
+    
 if sys.platform == "win32":
     base = "Win32GUI"
-    if (Path(__file__).parent / "ffmpeg.exe").exists():
-        include_files.append("ffmpeg.exe")
+    for file in ffmpeg_files:
+        if (Path(__file__).parent / file).exists():
+            include_files.append(file)
 
 includes = ["tkinter"]
 excludes = ["matplotlib", "sqlite3"]
