@@ -19,7 +19,7 @@ pre-commit = "^2.20.0"
 isort = "^5.10.1"
 mypy = "^0.982"
 flake8 = "^5.0.4"
-cx-Freeze = "^6.13.0"
+cx-Freeze = "^6.13.1"
 pyinstaller = "^5.6"
 
 [build-system]
