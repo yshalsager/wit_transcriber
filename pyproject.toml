@@ -20,7 +20,7 @@ isort = "^5.10.1"
 mypy = "^0.991"
 flake8 = "^6.0.0"
 cx-Freeze = "^6.13.1"
-pyinstaller = "^5.6"
+pyinstaller = "^5.7"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
