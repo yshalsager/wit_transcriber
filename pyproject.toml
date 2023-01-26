@@ -15,7 +15,7 @@ toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 black = "^22.12"
-pre-commit = "^2.21.0"
+pre-commit = "^3.0.1"
 isort = "^5.11.4"
 mypy = "^0.991"
 flake8 = "^6.0.0"
