@@ -6,7 +6,7 @@ authors = ["yshalsager <ysh-alsager@hotmail.com>"]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.11"
-httpx = "^0.24.1"
+httpx = "^0.25.1"
 pydub = "^0.25.1"
 ratelimiter = "^1.2.0"
 AwesomeTkinter = {version = "^2021.11.8", extras = ["gui"]}
