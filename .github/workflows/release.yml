@@ -150,7 +150,7 @@ jobs:
     needs: [build-windows, build-windows-msi, build-macos-dmg, build-macos-app, build-linux]
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4.1.7
     - name: Display structure of downloaded files
       run: ls -R
     - name: Release
